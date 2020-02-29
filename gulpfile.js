@@ -1,3 +1,4 @@
+/* eslint-disable */
 var gulp = require('gulp');
 var path = require('path');
 var fs   = require('fs-extra');
@@ -11,7 +12,7 @@ gulp.task('clean', function (done) {
 gulp.task('build:lib', ['clean'], function () {
     var coffee = require('gulp-coffee');
 
-    return gulp.src(['{lib,data}/**/*.coffee'])
+    return gulp.src(['{lib,data}/**/*.js'])
         .pipe(coffee())
         .pipe(gulp.dest('build/'));
 });
@@ -83,9 +84,10 @@ gulp.task('lint', function () {
 gulp.task('test', function () {
     require('coffee-script').register();
     require('should');
+    require('babel-register');
 
     var mocha = require('gulp-mocha');
-    return gulp.src('test/*.coffee', { read: false }).pipe(mocha());
+    return gulp.src('test/*.js', { read: false }).pipe(mocha({ timeout: 10000 }));
 });
 
 gulp.task('default', ['lint', 'test']);

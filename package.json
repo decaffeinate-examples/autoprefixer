@@ -43,7 +43,7 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "scripts": {
-    "test": "gulp"
+    "test": "gulp test"
   },
   "eslintConfig": {
     "extends": "eslint-config-postcss/es5"
