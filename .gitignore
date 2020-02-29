@@ -5,3 +5,5 @@ node_modules/
 
 build/
 autoprefixer.js
+!lib/autoprefixer.js
+!test/autoprefixer.js
