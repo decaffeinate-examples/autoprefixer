@@ -1,80 +1,109 @@
-Prefixer = require('../lib/prefixer')
-parse    = require('postcss/lib/parse')
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const Prefixer = require('../lib/prefixer');
+const parse    = require('postcss/lib/parse');
 
-describe 'Prefixer', ->
-  beforeEach ->
-    @prefix = new Prefixer()
-    @css = parse('@-ms-keyframes a { to { } } ' +
+describe('Prefixer', function() {
+  beforeEach(function() {
+    this.prefix = new Prefixer();
+    return this.css = parse('@-ms-keyframes a { to { } } ' +
                  ':-moz-full-screen { } a { } ' +
-                 '@-dev-keyframes s { to { } }')
+                 '@-dev-keyframes s { to { } }');
+  });
 
-  describe '.hack()', ->
+  describe('.hack()', () => it('registers hacks for subclasses', function() {
+    class A extends Prefixer {}
 
-    it 'registers hacks for subclasses', ->
-      class A extends Prefixer
+    class Hack extends A {
+      static initClass() {
+        this.names = ['a', 'b'];
+      }
+    }
+    Hack.initClass();
+    A.hack(Hack);
 
-      class Hack extends A
-        @names = ['a', 'b']
-      A.hack(Hack)
+    A.hacks.should.eql({ a: Hack, b: Hack });
+    return (Prefixer.hacks === undefined).should.be.true;
+  }));
 
-      A.hacks.should.eql { a: Hack, b: Hack }
-      (Prefixer.hacks == undefined).should.be.true
+  describe('.load()', () => it('loads hacks', function() {
+    class A extends Prefixer {
+      static initClass() {
+        this.prototype.klass = 'a';
+      }
+    }
+    A.initClass();
+    class Hack extends A {
+      static initClass() {
+        this.prototype.klass = 'hack';
+      }
+    }
+    Hack.initClass();
+    A.hacks = { hacked: Hack };
 
-  describe '.load()', ->
+    A.load('hacked').klass.should.eql('hack');
+    return A.load('a').klass.should.eql('a');
+  }));
 
-    it 'loads hacks', ->
-      class A extends Prefixer
-        klass: 'a'
-      class Hack extends A
-        klass: 'hack'
-      A.hacks = { hacked: Hack }
+  describe('.clone()', function() {
 
-      A.load('hacked').klass.should.eql('hack')
-      A.load('a').klass.should.eql('a')
+    it('cleans custom properties', function() {
+      const rule = this.css.first.first;
+      rule._autoprefixerPrefix = '-ms-';
+      rule._autoprefixerValues = { '-ms-': 1 };
 
-  describe '.clone()', ->
+      const cloned = Prefixer.clone(rule, {selector: 'from'});
+      cloned.selector.should.eql('from');
 
-    it 'cleans custom properties', ->
-      rule = @css.first.first
-      rule._autoprefixerPrefix = '-ms-'
-      rule._autoprefixerValues = { '-ms-': 1 }
+      (cloned._autoprefixerPrefix === undefined).should.be.true;
+      return (cloned._autoprefixerValues === undefined).should.be.true;
+    });
 
-      cloned = Prefixer.clone(rule, selector: 'from')
-      cloned.selector.should.eql('from')
+    return it('fixed declaration between', function() {
+      const css = parse('a { color : black }');
+      const cloned = Prefixer.clone(css.first.first);
+      return cloned.raws.between.should.eql(' : ');
+    });
+  });
 
-      (cloned._autoprefixerPrefix == undefined).should.be.true
-      (cloned._autoprefixerValues == undefined).should.be.true
+  return describe('parentPrefix', function() {
 
-    it 'fixed declaration between', ->
-      css = parse('a { color : black }')
-      cloned = Prefixer.clone(css.first.first)
-      cloned.raws.between.should.eql(' : ')
+    it('works with root node', function() {
+      return this.prefix.parentPrefix(this.css).should.be.false;
+    });
 
-  describe 'parentPrefix', ->
+    it('finds in at-rules', function() {
+      return this.prefix.parentPrefix(this.css.first).should.eql('-ms-');
+    });
 
-    it 'works with root node', ->
-      @prefix.parentPrefix(@css).should.be.false
+    it('finds in selectors', function() {
+      return this.prefix.parentPrefix(this.css.nodes[1]).should.eql('-moz-');
+    });
 
-    it 'finds in at-rules', ->
-      @prefix.parentPrefix(@css.first).should.eql('-ms-')
+    it('finds in parents', function() {
+      this.prefix.parentPrefix(this.css.first.first).should.eql('-ms-');
+      return this.prefix.parentPrefix(this.css.nodes[2]).should.be.false;
+    });
 
-    it 'finds in selectors', ->
-      @prefix.parentPrefix(@css.nodes[1]).should.eql('-moz-')
+    it('caches prefix', function() {
+      this.prefix.parentPrefix(this.css.first);
+      this.css.first._autoprefixerPrefix.should.eql('-ms-');
 
-    it 'finds in parents', ->
-      @prefix.parentPrefix(@css.first.first).should.eql('-ms-')
-      @prefix.parentPrefix(@css.nodes[2]).should.be.false
+      this.css.first._autoprefixerPrefix = false;
+      return this.prefix.parentPrefix(this.css.first).should.be.false;
+    });
 
-    it 'caches prefix', ->
-      @prefix.parentPrefix(@css.first)
-      @css.first._autoprefixerPrefix.should.eql('-ms-')
+    it('finds only browsers prefixes', function() {
+      return this.prefix.parentPrefix(this.css.nodes[2]).should.be.false;
+    });
 
-      @css.first._autoprefixerPrefix = false
-      @prefix.parentPrefix(@css.first).should.be.false
-
-    it 'finds only browsers prefixes', ->
-      @prefix.parentPrefix(@css.nodes[2]).should.be.false
-
-    it 'works with selector contained --', ->
-      css = parse(':--a { color: black }')
-      @prefix.parentPrefix(css.first.first).should.be.false
+    return it('works with selector contained --', function() {
+      const css = parse(':--a { color: black }');
+      return this.prefix.parentPrefix(css.first.first).should.be.false;
+    });
+  });
+});

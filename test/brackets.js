@@ -1,28 +1,29 @@
-brackets = require('../lib/brackets')
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const brackets = require('../lib/brackets');
 
-describe 'brackets', ->
+describe('brackets', function() {
 
-  describe '.parse()', ->
+  describe('.parse()', function() {
 
-    it 'parses simple string', ->
-      brackets.parse('test').should.eql ['test']
+    it('parses simple string', () => brackets.parse('test').should.eql(['test']));
 
-    it 'parses brackets', ->
-      brackets.parse('a (b) a').should.eql ['a ', ['b'], ' a']
+    it('parses brackets', () => brackets.parse('a (b) a').should.eql(['a ', ['b'], ' a']));
 
-    it 'parses many brackets', ->
-      brackets.parse('a (b ()) a').should.eql ['a ', ['b ', [''], ''], ' a']
+    it('parses many brackets', () => brackets.parse('a (b ()) a').should.eql(['a ', ['b ', [''], ''], ' a']));
 
-    it 'parses errors', ->
-      brackets.parse('a (b (').should.eql ['a ', ['b ', ['']]]
+    return it('parses errors', () => brackets.parse('a (b (').should.eql(['a ', ['b ', ['']]]));
+});
 
-  describe '.stringify()', ->
+  return describe('.stringify()', function() {
 
-    it 'stringifies simple string', ->
-      brackets.stringify(['test']).should.eql 'test'
+    it('stringifies simple string', () => brackets.stringify(['test']).should.eql('test'));
 
-    it 'stringifies brackets', ->
-      brackets.stringify(['a ', ['b'], ' a']).should.eql 'a (b) a'
+    it('stringifies brackets', () => brackets.stringify(['a ', ['b'], ' a']).should.eql('a (b) a'));
 
-    it 'stringifies many brackets', ->
-      brackets.stringify(['a ', ['b ', [''], ''], ' a']).should.eql 'a (b ()) a'
+    return it('stringifies many brackets', () => brackets.stringify(['a ', ['b ', [''], ''], ' a']).should.eql('a (b ()) a'));
+  });
+});

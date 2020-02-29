@@ -1,45 +1,58 @@
-browserslist = require('browserslist')
-Browsers     = require('../lib/browsers')
-Prefixes     = require('../lib/prefixes')
-info         = require('../lib/info')
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const browserslist = require('browserslist');
+const Browsers     = require('../lib/browsers');
+const Prefixes     = require('../lib/prefixes');
+const info         = require('../lib/info');
 
-data =
-  browsers: require('caniuse-db/data.json').agents
-  prefixes:
-    a:
-      browsers: ['firefox 21', 'firefox 20', 'chrome 30']
+const data = {
+  browsers: require('caniuse-db/data.json').agents,
+  prefixes: {
+    a: {
+      browsers: ['firefox 21', 'firefox 20', 'chrome 30'],
       transition: true
-    b:
-      browsers: ['ie 6', 'firefox 20']
+    },
+    b: {
+      browsers: ['ie 6', 'firefox 20'],
       props:    ['a', '*']
-    c:
-      browsers: ['firefox 21']
+    },
+    c: {
+      browsers: ['firefox 21'],
       props:    ['c']
-    d:
-      browsers: ['firefox 21']
+    },
+    d: {
+      browsers: ['firefox 21'],
       selector:   true
-    '@keyframes':
+    },
+    '@keyframes': {
       browsers: ['firefox 21']
-    transition:
+    },
+    transition: {
       browsers: ['firefox 21']
+    }
+  }
+};
 
-describe 'info', ->
+describe('info', function() {
 
-  it 'returns selected browsers and prefixes', ->
-    browsers = new Browsers(data.browsers,
-      ['chrome 30', 'firefox 21', 'firefox 20', 'ie 6'])
-    prefixes = new Prefixes(data.prefixes, browsers)
+  it('returns selected browsers and prefixes', function() {
+    const browsers = new Browsers(data.browsers,
+      ['chrome 30', 'firefox 21', 'firefox 20', 'ie 6']);
+    const prefixes = new Prefixes(data.prefixes, browsers);
 
-    coverage = browserslist.coverage(
-      ['chrome 30', 'firefox 21', 'firefox 20', 'ie 6'])
-    round = Math.round(coverage * 100) / 100.0
+    const coverage = browserslist.coverage(
+      ['chrome 30', 'firefox 21', 'firefox 20', 'ie 6']);
+    const round = Math.round(coverage * 100) / 100.0;
 
-    info(prefixes).should.eql "Browsers:\n" +
+    return info(prefixes).should.eql("Browsers:\n" +
                               "  Chrome: 30\n" +
                               "  Firefox: 21, 20\n" +
                               "  IE: 6\n" +
                               "\n" +
-                              "These browsers account for #{round}% " +
+                              `These browsers account for ${round}% ` +
                                 "of all users globally\n" +
                               "\n" +
                               "At-Rules:\n" +
@@ -55,20 +68,22 @@ describe 'info', ->
                               "Values:\n" +
                               "  b: moz, ms\n" +
                               "  c: moz\n"
+    );
+  });
 
-  it "doesn't show transitions unless they are necessary", ->
-    browsers = new Browsers(data.browsers, ['chrome 30', 'firefox 20', 'ie 6'])
-    prefixes = new Prefixes(data.prefixes, browsers)
+  it("doesn't show transitions unless they are necessary", function() {
+    const browsers = new Browsers(data.browsers, ['chrome 30', 'firefox 20', 'ie 6']);
+    const prefixes = new Prefixes(data.prefixes, browsers);
 
-    coverage = browserslist.coverage(['chrome 30', 'firefox 20', 'ie 6'])
-    round    = Math.round(coverage * 100) / 100.0
+    const coverage = browserslist.coverage(['chrome 30', 'firefox 20', 'ie 6']);
+    const round    = Math.round(coverage * 100) / 100.0;
 
-    info(prefixes).should.eql "Browsers:\n" +
+    return info(prefixes).should.eql("Browsers:\n" +
                               "  Chrome: 30\n" +
                               "  Firefox: 20\n" +
                               "  IE: 6\n" +
                               "\n" +
-                              "These browsers account for #{ round }% " +
+                              `These browsers account for ${ round }% ` +
                                 "of all users globally\n" +
                               "\n" +
                               "Properties:\n" +
@@ -76,15 +91,20 @@ describe 'info', ->
                               "\n" +
                               "Values:\n" +
                               "  b: moz, ms\n"
+    );
+  });
 
-  it 'returns string for empty prefixes', ->
-    browsers = new Browsers(data.browsers, ['ie 7'])
-    prefixes = new Prefixes(data.prefixes, browsers)
+  it('returns string for empty prefixes', function() {
+    const browsers = new Browsers(data.browsers, ['ie 7']);
+    const prefixes = new Prefixes(data.prefixes, browsers);
 
-    info(prefixes).should.match(/remove Autoprefixer/)
+    return info(prefixes).should.match(/remove Autoprefixer/);
+  });
 
-  it 'returns string for empty browsers', ->
-    browsers = new Browsers(data.browsers, [])
-    prefixes = new Prefixes(data.prefixes, browsers)
+  return it('returns string for empty browsers', function() {
+    const browsers = new Browsers(data.browsers, []);
+    const prefixes = new Prefixes(data.prefixes, browsers);
 
-    info(prefixes).should.eql "No browsers selected"
+    return info(prefixes).should.eql("No browsers selected");
+  });
+});

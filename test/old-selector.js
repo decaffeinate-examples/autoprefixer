@@ -1,36 +1,51 @@
-OldSelector = require('../lib/old-selector')
-Selector    = require('../lib/selector')
-parse       = require('postcss/lib/parse')
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const OldSelector = require('../lib/old-selector');
+const Selector    = require('../lib/selector');
+const parse       = require('postcss/lib/parse');
 
-describe 'OldSelector', ->
-  beforeEach ->
-    selector = new Selector('::selection', ['-moz-', '-ms-'])
-    @old     = selector.old('-moz-')
+describe('OldSelector', function() {
+  beforeEach(function() {
+    const selector = new Selector('::selection', ['-moz-', '-ms-']);
+    return this.old     = selector.old('-moz-');
+  });
 
-  describe 'isHack()', ->
+  describe('isHack()', function() {
 
-    it 'returns true on last rule', ->
-      css = parse('::selection {} ::-moz-selection {}')
-      @old.isHack(css.last).should.be.true
+    it('returns true on last rule', function() {
+      const css = parse('::selection {} ::-moz-selection {}');
+      return this.old.isHack(css.last).should.be.true;
+    });
 
-    it 'stops on another type', ->
-      css = parse('::-moz-selection {} @keyframes anim {} ::selection {}')
-      @old.isHack(css.first).should.be.true
+    it('stops on another type', function() {
+      const css = parse('::-moz-selection {} @keyframes anim {} ::selection {}');
+      return this.old.isHack(css.first).should.be.true;
+    });
 
-    it 'stops on another selector', ->
-      css = parse('::-moz-selection {} a {} ::selection {}')
-      @old.isHack(css.first).should.be.true
+    it('stops on another selector', function() {
+      const css = parse('::-moz-selection {} a {} ::selection {}');
+      return this.old.isHack(css.first).should.be.true;
+    });
 
-    it 'finds unprefixed selector', ->
-      css = parse('::-moz-selection {} ::-o-selection {} ::selection {}')
-      @old.isHack(css.first).should.be.false
+    return it('finds unprefixed selector', function() {
+      const css = parse('::-moz-selection {} ::-o-selection {} ::selection {}');
+      return this.old.isHack(css.first).should.be.false;
+    });
+  });
 
-  describe 'check()', ->
+  return describe('check()', function() {
 
-    it 'finds old selector', ->
-      css = parse('body::-moz-selection {} body::selection {}')
-      @old.check(css.first).should.be.true
+    it('finds old selector', function() {
+      const css = parse('body::-moz-selection {} body::selection {}');
+      return this.old.check(css.first).should.be.true;
+    });
 
-    it 'finds right', ->
-      css = parse('body:::-moz-selection {}')
-      @old.check(css.first).should.be.false
+    return it('finds right', function() {
+      const css = parse('body:::-moz-selection {}');
+      return this.old.check(css.first).should.be.false;
+    });
+  });
+});
